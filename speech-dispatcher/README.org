@@ -1,0 +1,128 @@
+This repository has a starting point for using speechd or emacspeak with OpenAI-compatible text-to-speech services. If you have questions, please contact [[mailto:sacha@sachachua.com][sacha@sachachua.com]].
+
+* speechd_ai
+** What is this
+
+This is a module to allow speech-dispatcher to use OpenAI-compatible text-to-speech services.
+For example, I use this to send longer text to Kokoro FastAPI.
+
+** How to use
+
+1. Set up [[https://github.com/brailcom/speechd][brailcom/speechd]] and another speech synthesizer (ex: espeak-ng). Run =spd-conf= if needed. Confirm that it works by using =spd-say -O= to list output modules and =spd-say -o espeak-ng "some text"= to speak text using a specific module such as espeak-ng.
+
+2. Update file:speech_ai.conf with your details. Alternatively, if you're using [[https://github.com/remsky/Kokoro-FastAPI][Kokoro FastAPI]], update file:speech_ai_kokoro.conf.
+
+3. Edit file:~/.config/speech-dispatcher/speechd.conf and add your own version of:
+
+   #+begin_src conf
+AddModule "ai"  "/path/to/speechd-ai/speechd_openapi_wrapper" "/path/to/speechd-ai/speechd_ai.conf" # or speechd_ai_kokoro.conf
+   #+end_src
+
+** Testing the module directly
+*** English
+
+#+begin_src sh :results verbatim
+echo "INIT\nAUDIO\n.\nSPEAK\n<speak>The quick brown fox jumps over the lazy dog.</speak>\n.\nQUIT" | .venv/bin/python3 speechd_ai.py speechd_ai_kokoro.conf
+#+end_src
+
+#+RESULTS:
+:results:
+299-AI initialized.
+299 OK LOADED SUCCESSFULLY
+207 OK RECEIVING AUDIO SETTINGS
+203 OK AUDIO INITIALIZED
+202 OK SEND DATA
+200 OK SPEAKING
+701 BEGIN
+kokoro af_sarah  The quick brown fox jumps over the lazy dog.
+210 OK QUIT
+702 END
+:end:
+
+With the wrapper:
+
+#+begin_src sh :results verbatim
+echo "INIT\nAUDIO\n.\nSPEAK\n<speak>The quick brown fox jumps over the lazy dog.</speak>\n.\nQUIT" | ./speechd_ai_wrapper speechd_ai_kokoro.conf
+#+end_src
+
+*** French
+
+#+begin_src sh :results verbatim
+echo -e "INIT\nAUDIO\n.\nSET\nvoice=ff_siwis\n.\nSPEAK\n<speak>Bonjour, mon ami.</speak>\n.\nQUIT"  | .venv/bin/python3 speechd_ai.py speechd_ai_kokoro.conf
+#+end_src
+
+#+RESULTS:
+:results:
+207 OK RECEIVING AUDIO SETTINGS
+203 OK AUDIO INITIALIZED
+203 OK RECEIVING SETTINGS
+203 OK SETTINGS RECEIVED
+202 OK SEND DATA
+200 OK SPEAKING
+701 BEGIN
+210 OK QUIT
+702 END
+:end:
+** Testing the module through speech-dispatcher
+
+Assuming that speechd is set up for Kokoro, this should list =ai= among other options:
+
+#+begin_src sh :results verbatim
+spd-say -O
+#+end_src
+
+#+RESULTS:
+:results:
+OUTPUT MODULES
+ai
+espeak-ng
+:end:
+
+And this should say something out loud:
+
+#+begin_src sh
+spd-say -o ai -y af_sarah "Hello, this is a test"
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+** Testing in Emacs
+
+#+begin_src emacs-lisp
+(speechd-set-output-module "ai")
+(speechd-speak-set-language "en")
+(speechd-say-text "Hello world")
+(speechd-speak-set-language "fr")
+(speechd-say-text "Bonjour, je m'appelle Emacs !")
+#+end_src
+
+#+RESULTS:
+:results:
+:end:
+** Notes for the future
+
+I don't know how to set the voice in a way that the speechd server can pass on to Kokoro. This doesn't work yet.
+
+#+begin_src emacs-lisp
+(speechd--set-parameter 'voice "af_sarah" t)
+(speechd-say-text "This should sound like someone different.")
+#+end_src
+
+I think switching the module from Emacs Lisp code is probably going to be more effective than doing the switching on the server side, because this way we can, if we want to, use Kokoro TTS even for short sentences. Alternatively, maybe we can dynamically change the threshold settings.
+I'm still not entirely sure this is the right approach, but maybe it will become more viable as the technology improves and latency decreases (maybe).
+
+There's some kind of AUDIO command we can use to produce output through the server. That might be useful.
+
+
+* emacspeak_ai
+
+#+begin_src sh
+echo "set_lang \":af_bella\"\nq {Hello world, this is a much longer sentence and should trigger Emacspeak AI use}\nd" | .venv/bin/python3 emacspeak_ai.py
+#+end_src
+
+#+begin_src sh
+echo "set_lang \":af_bella\"\nq {Hello world, this is a much longer sentence and should trigger Emacspeak AI use}\nd" | .venv/bin/python3 emacspeak_ai.py
+#+end_src
+
+DTK_PROGRAM=~/proj/speechd-ai/emacspeak_ai_wrapper ./runq

@@ -1,0 +1,4 @@
+#!/bin/bash
+export OPENAI_API_KEY='not-needed'
+DIR="$(cd -- "$(dirname "$0")" && pwd)"
+exec "$DIR/.venv/bin/python3" "$DIR/speechd_ai.py" "$@"

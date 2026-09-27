@@ -1,0 +1,13 @@
+[Unit]
+Description=Starte piper-tts proxy for openai:/v1
+
+[Service]
+Type=simple
+User=tts
+WorkingDirectory=/home/tts/tts-server-piper-tts/
+ExecStart=/home/tts/tts-server-piper-tts/start_tts-server-piper-tts.sh 
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
