@@ -6,6 +6,12 @@
 
 This setup runs Piper TTS with the German `dii-high` voice as a local TTS server and connects it to Speech Dispatcher through the included AI output module. The `piper-dii.service` systemd unit manages the server.
 
+## Requirements 
+
+- ffmpeg 
+- python3-pip 
+- python3-venv 
+
 ## Installation
 
 - 1. Copy `start_tts-server-piper-tts.sh` to `/home/tts/tts-server-piper-tts/` give it the users rights and make it executable.
