@@ -1,5 +1,7 @@
 # Piper Dii TTS for Speech Dispatcher
 
+- Created with perplexity.ai
+ 
 ## What Is This?
 
 This setup runs Piper TTS with the German `dii-high` voice as a local TTS server and connects it to Speech Dispatcher through the included AI output module. The `piper-dii.service` systemd unit manages the server.
