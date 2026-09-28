@@ -9,6 +9,7 @@ This setup runs Piper TTS with the German `dii-high` voice as a local TTS server
 ## Requirements 
 
 - ffmpeg 
+- sox 
 - python3-pip 
 - python3-venv 
 
