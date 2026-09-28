@@ -289,10 +289,9 @@ def speak(text):
     try:
         text = strip_ssml(text)
         target_speed = speed
-
         logging.info(
-            "model %s voice %s proxy_speed 0.8 playback_target %.1f input %s",
-            model, voice, target_speed, text
+            "model %s voice %s proxy_speed 0.8 playback_target %.1f",
+            model, voice, target_speed
         )
 
         with client.audio.speech.with_streaming_response.create(
@@ -316,8 +315,8 @@ def speak_api_speed(text):
     try:
         text = strip_ssml(text)
         logging.info(
-            "model %s voice %s speed %.1f input %s",
-            model, voice, speed, text
+            "model %s voice %s proxy_speed 0.8 playback_target %.1f",
+            model, voice, target_speed
         )
         with client.audio.speech.with_streaming_response.create(
             model=model,
@@ -340,8 +339,8 @@ def speak_full_ffmpeg_wait(text):
         target_speed = speed
 
         logging.info(
-            "model %s voice %s proxy_speed 0.8 playback_target %.1f input %s",
-            model, voice, target_speed, text
+            "model %s voice %s proxy_speed 0.8 playback_target %.1f",
+            model, voice, target_speed
         )
 
         with client.audio.speech.with_streaming_response.create(
