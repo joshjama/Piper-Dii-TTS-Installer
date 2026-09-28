@@ -189,23 +189,30 @@ def play_wav_with_tempo(data, target_speed):
     raw_format, codec = raw_formats[sample_width]
     frame_bytes = sample_width * channels
 
+    encoding = "unsigned-integer" if sample_width == 1 else "signed-integer"
+
+    command = [
+        "sox",
+        "-q",
+        "-t", "wav", "-",
+        "-t", "raw",
+        "-e", encoding,
+        "-b", str(sample_width * 8),
+        "-L",
+        "-c", str(channels),
+        "-r", str(sample_rate),
+        "-",
+        "tempo", "-s", f"{tempo:.6f}",
+    ]
+
+    if abs(gain - 1.0) >= 0.000001:
+        command.extend(["vol", f"{gain:.3f}"])
+
     process = subprocess.Popen(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-loglevel", "error",
-            "-nostdin",
-            "-i", "pipe:0",
-            "-af", f"atempo={tempo:.6f}",
-            "-ac", str(channels),
-            "-ar", str(sample_rate),
-            "-c:a", codec,
-            "-f", raw_format,
-            "pipe:1",
-        ],
+        command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
+        stderr=sys.stderr,
         bufsize=0,
     )
 
