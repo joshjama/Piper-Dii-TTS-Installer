@@ -205,8 +205,8 @@ def play_wav_with_tempo(data, target_speed):
         "tempo", "-s", f"{tempo:.6f}",
     ]
 
-    if abs(gain - 1.0) >= 0.000001:
-        command.extend(["vol", f"{gain:.3f}"])
+    #if abs(gain - 1.0) >= 0.000001:
+    #   command.extend(["vol", f"{gain:.3f}"])
 
     process = subprocess.Popen(
         command,
